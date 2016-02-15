@@ -1,14 +1,16 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var simonSays = require('./../js/simon-says.js').simonSays;
 var colors = ["red","blue","chartreuse","yellow"];
-var moves = ["red"];
+var moves = [];
 var flashCount = 0;
 var userCount = 0;
-var gameStates = ["displayPattern", "waitingForInput"];
-var currentGameState;
+var gameStates = ["displayPattern", "waitingForInput","lose"];
+var currentGameState = gameStates[2];
 
 exports.startGame = function( )
 {
+    $("#header").text("Simon Says");
+    moves.push( colors[ Math.floor(Math.random( ) * colors.length) ] );
     currentGameState = gameStates[0];
     displayPatternToUser();
 }
@@ -28,16 +30,21 @@ exports.move = function( current )
         moves.push( colors[ Math.floor(Math.random( ) * colors.length) ] );
         interval(displayPatternToUser, 125, 1);
       }
-      else
-      {
-
-      }
     }
     else
     {
       $("#header").text("Lose!");
+      moves = [];
+      flashCount = 0;
+      userCount = 0;
+      currentGameState = gameStates[2];
     }
   }
+}
+
+exports.running = function( )
+{
+  return currentGameState !== gameStates[2];
 }
 
 function displayPatternToUser()
@@ -122,10 +129,17 @@ exports.simonSays = function( current )
 },{}],3:[function(require,module,exports){
 var gameMove = require('./../js/game.js').move;
 var gameStart = require('./../js/game.js').startGame;
+var gameRunning = require('./../js/game.js').running;
 
 $(document).ready(function( ) {
 
-  gameStart( );
+  $("#start-button").on("click",function( ){
+    if(!gameRunning( ))
+    {
+      gameStart( );
+    }
+  });
+
 
   $(".square").on("click",function() {
     gameMove(this.id);

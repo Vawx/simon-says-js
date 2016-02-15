@@ -1,13 +1,15 @@
 var simonSays = require('./../js/simon-says.js').simonSays;
 var colors = ["red","blue","chartreuse","yellow"];
-var moves = ["red"];
+var moves = [];
 var flashCount = 0;
 var userCount = 0;
-var gameStates = ["displayPattern", "waitingForInput"];
-var currentGameState;
+var gameStates = ["displayPattern", "waitingForInput","lose"];
+var currentGameState = gameStates[2];
 
 exports.startGame = function( )
 {
+    $("#header").text("Simon Says");
+    moves.push( colors[ Math.floor(Math.random( ) * colors.length) ] );
     currentGameState = gameStates[0];
     displayPatternToUser();
 }
@@ -27,16 +29,21 @@ exports.move = function( current )
         moves.push( colors[ Math.floor(Math.random( ) * colors.length) ] );
         interval(displayPatternToUser, 125, 1);
       }
-      else
-      {
-
-      }
     }
     else
     {
       $("#header").text("Lose!");
+      moves = [];
+      flashCount = 0;
+      userCount = 0;
+      currentGameState = gameStates[2];
     }
   }
+}
+
+exports.running = function( )
+{
+  return currentGameState !== gameStates[2];
 }
 
 function displayPatternToUser()
