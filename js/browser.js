@@ -1,3 +1,4 @@
+var simonSays = require('./simon-says.js').simonSays
 
 $(document).ready(function( ) {
 
