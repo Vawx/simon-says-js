@@ -4,8 +4,6 @@ var colors = ["red","blue","chartreuse","yellow"];
 var moves = ["red"];
 var flashCount = 0;
 var userCount = 0;
-var flashTimer;
-var delayTimer;
 var gameStates = ["displayPattern", "waitingForInput"];
 var currentGameState;
 
@@ -14,25 +12,6 @@ exports.startGame = function( )
     currentGameState = gameStates[0];
     displayPatternToUser();
 }
-
-function interval(func, wait, times){
-    var interv = function(w, t){
-        return function(){
-            if(typeof t === "undefined" || t-- > 0){
-                setTimeout(interv, w);
-                try{
-                    func.call(null);
-                }
-                catch(e){
-                    t = 0;
-                    throw e.toString();
-                }
-            }
-        };
-    }(wait, times);
-
-    setTimeout(interv, wait);
-};
 
 exports.move = function( current )
 {
@@ -49,22 +28,24 @@ exports.move = function( current )
         moves.push( colors[ Math.floor(Math.random( ) * colors.length) ] );
         interval(displayPatternToUser, 125, 1);
       }
+      else
+      {
+
+      }
     }
     else
     {
-      console.log( "LOSE " + current + " " + moves[userCount] + " " + userCount );
-      //lose
+      $("#header").text("Lose!");
     }
   }
 }
 
 function displayPatternToUser()
 {
-  clearInterval(delayTimer);
   if(currentGameState === gameStates[0])
   {
     resetToDullColor(moves[flashCount - 1]);
-    flashTimer = setInterval(flashReset, 1550);
+    interval(flashReset, 550, 1);
     flashColor( );
     flashCount += 1;
   }
@@ -85,7 +66,6 @@ function flashColor( )
 
 function flashReset( )
 {
-  clearInterval(flashTimer);
   interval(displayPatternToUser, 125, 1);
 }
 
@@ -107,6 +87,26 @@ function resetToDullColor(color)
     break;
   }
 }
+
+/** Fix for setInterval( ) -- Thanks to: https://gist.github.com/richardkundl/7673746 */
+function interval(func, wait, times){
+    var interv = function(w, t){
+        return function(){
+            if(typeof t === "undefined" || t-- > 0){
+                setTimeout(interv, w);
+                try{
+                    func.call(null);
+                }
+                catch(e){
+                    t = 0;
+                    throw e.toString();
+                }
+            }
+        };
+    }(wait, times);
+
+    setTimeout(interv, wait);
+};
 
 },{"./../js/simon-says.js":2}],2:[function(require,module,exports){
 

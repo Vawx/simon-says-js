@@ -27,11 +27,14 @@ exports.move = function( current )
         moves.push( colors[ Math.floor(Math.random( ) * colors.length) ] );
         interval(displayPatternToUser, 125, 1);
       }
+      else
+      {
+
+      }
     }
     else
     {
-      console.log( "LOSE " + current + " " + moves[userCount] + " " + userCount );
-      //lose
+      $("#header").text("Lose!");
     }
   }
 }
@@ -62,7 +65,6 @@ function flashColor( )
 
 function flashReset( )
 {
-  clearInterval(flashTimer);
   interval(displayPatternToUser, 125, 1);
 }
 
