@@ -1,3 +1,4 @@
+var del         = require('del');
 var gulp        = require('gulp');
 var uglify      = require('gulp-uglify');
 var concat      = require('gulp-concat');
@@ -30,13 +31,17 @@ gulp.task("minifyScripts", ["jsBrowserify"], function() {
     .pipe(gulp.dest("./build/js"));
 });
 
-gump.task.build("build", function() {
+gulp.task("build", ["clean"], function() {
   if(buildProduction)
   {
     gulp.start('minifyScripts');
   }
   else
-  }
+  {
     gulp.start('jsBrowserify');
   }
+});
+
+gulp.task("clean", function() {
+  return del(['build, tmp']);
 });
