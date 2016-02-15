@@ -2,7 +2,10 @@ var gulp        = require('gulp');
 var uglify      = require('gulp-uglify');
 var concat      = require('gulp-concat');
 var source      = require('vinyl-source-stream');
+var utilities   = require('gulp-util');
 var browserify  = require('browserify');
+
+var buildProduction = utilities.env.production;
 
 gulp.task('simonSays', function() {
   console.log("simon says");
@@ -25,4 +28,15 @@ gulp.task("minifyScripts", ["jsBrowserify"], function() {
   return gulp.src("./build/js/app.js")
     .pipe(uglify())
     .pipe(gulp.dest("./build/js"));
+});
+
+gump.task.build("build", function() {
+  if(buildProduction)
+  {
+    gulp.start('minifyScripts');
+  }
+  else
+  }
+    gulp.start('jsBrowserify');
+  }
 });
