@@ -1,1 +1,149 @@
-!function n(r,t,e){function o(a,s){if(!t[a]){if(!r[a]){var c="function"==typeof require&&require;if(!s&&c)return c(a,!0);if(u)return u(a,!0);var i=new Error("Cannot find module '"+a+"'");throw i.code="MODULE_NOT_FOUND",i}var f=t[a]={exports:{}};r[a][0].call(f.exports,function(n){var t=r[a][1][n];return o(t?t:n)},f,f.exports,n,r,t,e)}return t[a].exports}for(var u="function"==typeof require&&require,a=0;a<e.length;a++)o(e[a]);return o}({1:[function(n,r,t){function e(){h===g[0]&&(a(i[f-1]),s(u,550,1),o(),f+=1)}function o(){f<i.length?$("#"+i[f]).css("background-color",i[f]):(f=0,h=g[1])}function u(){s(e,125,1)}function a(n){switch(n){case"red":$("#"+n).css("background-color","rgb(120,10,10)");break;case"yellow":$("#"+n).css("background-color","rgb(120,120,10)");break;case"chartreuse":$("#"+n).css("background-color","rgb(10,120,10)");break;case"blue":$("#"+n).css("background-color","rgb(10,10,120)")}}function s(n,r,t){var e=function(r,t){return function(){if("undefined"==typeof t||t-- >0){setTimeout(e,r);try{n.call(null)}catch(o){throw t=0,o.toString()}}}}(r,t);setTimeout(e,r)}var c=(n("./../js/simon-says.js").simonSays,["red","blue","chartreuse","yellow"]),i=[],f=0,l=0,g=["displayPattern","waitingForInput","lose"],h=g[2];t.startGame=function(){$("#header").text("Simon Says"),i.push(c[Math.floor(Math.random()*c.length)]),h=g[0],e()},t.move=function(n){h===g[1]&&(n===i[l]?(l+=1,l>=i.length&&(h=g[0],f=0,l=0,i.push(c[Math.floor(Math.random()*c.length)]),s(e,125,1))):($("#header").text("Lose!"),i=[],f=0,l=0,h=g[2]))},t.running=function(){return h!==g[2]}},{"./../js/simon-says.js":2}],2:[function(n,r,t){t.simonSays=function(n){var r=["red","green","blue","yellow"],t=r[Math.floor(Math.random()*r.length)];return n.push(t),n}},{}],3:[function(n,r,t){var e=n("./../js/game.js").move,o=n("./../js/game.js").startGame,u=n("./../js/game.js").running;$(document).ready(function(){$("#start-button").on("click",function(){u()||o()}),$(".square").on("click",function(){e(this.id)})})},{"./../js/game.js":1}]},{},[3]);
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var simonSays = require('./../js/simon-says.js').simonSays;
+var colors = ["red","blue","chartreuse","yellow"];
+var moves = [];
+var flashCount = 0;
+var userCount = 0;
+var gameStates = ["displayPattern", "waitingForInput","lose"];
+var currentGameState = gameStates[2];
+
+exports.startGame = function( )
+{
+    $("#header").text("Simon Says");
+    moves.push( colors[ Math.floor(Math.random( ) * colors.length) ] );
+    currentGameState = gameStates[0];
+    displayPatternToUser();
+}
+
+exports.move = function( current )
+{
+  if(currentGameState === gameStates[1])
+  {
+    if(current === moves[userCount])
+    {
+      userCount += 1;
+      if( userCount >= moves.length)
+      {
+        currentGameState = gameStates[0];
+        flashCount = 0;
+        userCount = 0;
+        moves.push( colors[ Math.floor(Math.random( ) * colors.length) ] );
+        interval(displayPatternToUser, 125, 1);
+      }
+    }
+    else
+    {
+      $("#header").text("Survived " + moves.length + " moves!");
+      moves = [];
+      flashCount = 0;
+      userCount = 0;
+      currentGameState = gameStates[2];
+    }
+  }
+}
+
+exports.running = function( )
+{
+  return currentGameState !== gameStates[2];
+}
+
+function displayPatternToUser()
+{
+  if(currentGameState === gameStates[0])
+  {
+    resetToDullColor(moves[flashCount - 1]);
+    interval(flashReset, 550, 1);
+    flashColor( );
+    flashCount += 1;
+  }
+}
+
+function flashColor( )
+{
+  if(flashCount < moves.length)
+  {
+    $("#" + moves[flashCount]).css("background-color", moves[flashCount]);
+  }
+  else
+  {
+    flashCount = 0;
+    currentGameState = gameStates[1];
+  }
+}
+
+function flashReset( )
+{
+  interval(displayPatternToUser, 125, 1);
+}
+
+function resetToDullColor(color)
+{
+  switch(color)
+  {
+    case "red":
+      $("#" + color).css("background-color", "rgb(120,10,10)");
+    break;
+    case "yellow":
+      $("#" + color).css("background-color", "rgb(120,120,10)");
+    break;
+    case "chartreuse":
+      $("#" + color).css("background-color", "rgb(10,120,10)");
+    break;
+    case "blue":
+      $("#" + color).css("background-color", "rgb(10,10,120)");
+    break;
+  }
+}
+
+/** Fix for setInterval( ) -- Thanks to: https://gist.github.com/richardkundl/7673746 */
+function interval(func, wait, times){
+    var interv = function(w, t){
+        return function(){
+            if(typeof t === "undefined" || t-- > 0){
+                setTimeout(interv, w);
+                try{
+                    func.call(null);
+                }
+                catch(e){
+                    t = 0;
+                    throw e.toString();
+                }
+            }
+        };
+    }(wait, times);
+
+    setTimeout(interv, wait);
+};
+
+},{"./../js/simon-says.js":2}],2:[function(require,module,exports){
+
+exports.simonSays = function( current )
+{
+  var choices = [ "red", "green", "blue", "yellow" ];
+  var next = choices[ Math.floor( Math.random( ) * choices.length ) ];
+
+  current.push( next );
+  return current;
+}
+
+},{}],3:[function(require,module,exports){
+var gameMove = require('./../js/game.js').move;
+var gameStart = require('./../js/game.js').startGame;
+var gameRunning = require('./../js/game.js').running;
+
+$(document).ready(function( ) {
+
+  $("#start-button").on("click",function( ){
+    if(!gameRunning( ))
+    {
+      gameStart( );
+    }
+  });
+
+
+  $(".square").on("click",function() {
+    gameMove(this.id);
+  });
+});
+
+},{"./../js/game.js":1}]},{},[3]);

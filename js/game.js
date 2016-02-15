@@ -32,7 +32,7 @@ exports.move = function( current )
     }
     else
     {
-      $("#header").text("Lose!");
+      $("#header").text("Survived " + moves.length + " moves!");
       moves = [];
       flashCount = 0;
       userCount = 0;
