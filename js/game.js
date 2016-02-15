@@ -1,11 +1,8 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var simonSays = require('./../js/simon-says.js').simonSays;
 var colors = ["red","blue","chartreuse","yellow"];
 var moves = ["red"];
 var flashCount = 0;
 var userCount = 0;
-var flashTimer;
-var delayTimer;
 var gameStates = ["displayPattern", "waitingForInput"];
 var currentGameState;
 
@@ -14,25 +11,6 @@ exports.startGame = function( )
     currentGameState = gameStates[0];
     displayPatternToUser();
 }
-
-function interval(func, wait, times){
-    var interv = function(w, t){
-        return function(){
-            if(typeof t === "undefined" || t-- > 0){
-                setTimeout(interv, w);
-                try{
-                    func.call(null);
-                }
-                catch(e){
-                    t = 0;
-                    throw e.toString();
-                }
-            }
-        };
-    }(wait, times);
-
-    setTimeout(interv, wait);
-};
 
 exports.move = function( current )
 {
@@ -60,11 +38,10 @@ exports.move = function( current )
 
 function displayPatternToUser()
 {
-  clearInterval(delayTimer);
   if(currentGameState === gameStates[0])
   {
     resetToDullColor(moves[flashCount - 1]);
-    flashTimer = setInterval(flashReset, 1550);
+    interval(flashReset, 550, 1);
     flashColor( );
     flashCount += 1;
   }
@@ -108,28 +85,22 @@ function resetToDullColor(color)
   }
 }
 
-},{"./../js/simon-says.js":2}],2:[function(require,module,exports){
+/** Fix for setInterval( ) -- Thanks to: https://gist.github.com/richardkundl/7673746 */
+function interval(func, wait, times){
+    var interv = function(w, t){
+        return function(){
+            if(typeof t === "undefined" || t-- > 0){
+                setTimeout(interv, w);
+                try{
+                    func.call(null);
+                }
+                catch(e){
+                    t = 0;
+                    throw e.toString();
+                }
+            }
+        };
+    }(wait, times);
 
-exports.simonSays = function( current )
-{
-  var choices = [ "red", "green", "blue", "yellow" ];
-  var next = choices[ Math.floor( Math.random( ) * choices.length ) ];
-
-  current.push( next );
-  return current;
-}
-
-},{}],3:[function(require,module,exports){
-var gameMove = require('./../js/game.js').move;
-var gameStart = require('./../js/game.js').startGame;
-
-$(document).ready(function( ) {
-
-  gameStart( );
-
-  $(".square").on("click",function() {
-    gameMove(this.id);
-  });
-});
-
-},{"./../js/game.js":1}]},{},[3]);
+    setTimeout(interv, wait);
+};
