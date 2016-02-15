@@ -1,4 +1,5 @@
 var gulp        = require('gulp');
+var uglify      = require('gulp-uglify');
 var concat      = require('gulp-concat');
 var source      = require('vinyl-source-stream');
 var browserify  = require('browserify');
@@ -18,4 +19,10 @@ gulp.task('jsBrowserify', ['concatInterface'], function() {
   .bundle()
   .pipe(source('app.js'))
   .pipe(gulp.dest('./build/js'));
+});
+
+gulp.task("minifyScripts", ["jsBrowserify"], function() {
+  return gulp.src("./build/js/app.js")
+    .pipe(uglify())
+    .pipe(gulp.dest("./build/js"));
 });
